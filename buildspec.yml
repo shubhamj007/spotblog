@@ -1,0 +1,28 @@
+version: 0.1
+environment_variables:
+    plaintext:
+        S3_BUCKET: "frontend"
+        BUILD_ENV: "prod"
+phases:
+    install:
+        commands:
+            - echo Installing source NPM dependencies...
+            - npm install
+            - npm install -g @angular/cli@6.x.x
+            - echo NPM dependencies installed
+            - echo downloading config file
+            - echo finished downloading file
+    build:
+        commands:
+            - echo Build started
+            - ng build --prod
+            - echo Build finished
+    post_build:
+         commands:
+            - echo Pushing build to S3
+            - aws s3 rm s3://frontend  --recursive
+            - aws s3 cp dist/frontend/ s3://ripple-frontend --recursive
+            - echo Build pushed to S3
+artifacts:
+    files:
+        - 'dist/frontend/**/*'
